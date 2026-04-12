@@ -44,7 +44,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Validate Python scripts
-        run: python3 -m py_compile scripts/build_manifest.py scripts/convert.py
+        run: python3 -m py_compile scripts/build_manifest.py scripts/convert.py scripts/process.py
 
       - name: Run Python tests
         run: python3 -m unittest discover -s tests/scripts -v

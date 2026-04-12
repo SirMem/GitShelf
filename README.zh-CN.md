@@ -4,7 +4,7 @@
 
 基于 GitHub 的内容托管平台。Fork，上传，搞定。
 
-> Fork 本仓库即可拥有自己的内容平台。上传 PDF（自动转换为书籍）、Markdown 文档（直接渲染）、ZIP 压缩包（部署为静态站点），全部托管在 GitHub Pages 上。零服务器成本。
+> Fork 本仓库即可拥有自己的内容平台。上传 PDF 或 EPUB（自动转换为书籍）、Markdown 文档（直接渲染）、ZIP 压缩包（部署为静态站点），全部托管在 GitHub Pages 上。零服务器成本。
 
 ## 快速开始
 
@@ -24,7 +24,7 @@
 3. 在你的 Fork 中，进入 **Settings > Secrets and variables > Actions**
 4. 点击 **New repository secret**，名称填 `MINERU_TOKEN`，粘贴 Token
 
-> 仅上传 PDF 时需要。Markdown 和 ZIP 上传无需此配置。
+> 仅上传 PDF 时需要。EPUB、Markdown 和 ZIP 上传无需此配置。
 
 ### 3. 密码保护（可选）
 
@@ -41,6 +41,7 @@
    （[点此创建](https://github.com/settings/tokens/new?scopes=repo&description=GitShelf)）
 3. 上传文件：
    - **`.pdf`** — 通过 MinerU API 转换为多章节书籍
+   - **`.epub`** — 通过 pandoc 转换为多章节书籍
    - **`.md`** — 直接作为文档渲染展示
    - **`.zip`** — 解压为静态站点（需包含 `index.html`）
 4. 等待 GitHub Actions 处理完成
@@ -50,14 +51,14 @@
 
 | 类型 | 上传格式 | 展示方式 |
 |------|----------|----------|
-| **书籍** | `.pdf` | 章节阅读器 + TOC 侧栏 + 键盘导航 |
+| **书籍** | `.pdf` 或 `.epub` | 章节阅读器 + TOC 侧栏 + 键盘导航 |
 | **文档** | `.md` | 单页 Markdown 渲染，支持代码高亮和数学公式 |
 | **站点** | `.zip` | 静态站点直接托管，点击新窗口打开 |
 
 ## 功能
 
 - **阅读器** — 明暗主题、章节侧边栏、键盘导航、代码高亮（Shiki）、数学公式（KaTeX）、响应式布局
-- **管理面板** — 上传 PDF/Markdown/ZIP、目录管理（编辑、发布、隐藏、归档、删除）、搜索和筛选
+- **管理面板** — 上传 PDF/EPUB/Markdown/ZIP、目录管理（编辑、发布、隐藏、归档、删除）、搜索和筛选
 - **处理流水线** — GitHub Actions 自动处理上传内容，大 PDF 自动分块转换
 - **首页** — 标签页筛选：全部 / 书籍 / 文档 / 站点
 
@@ -66,9 +67,10 @@
 ```
 上传内容（浏览器 → GitHub API → input/）
   → GitHub Actions 运行 scripts/process.py
-  → .pdf: MinerU API → Markdown → 拆分章节 → docs/books/{id}/
-  → .md:  复制到 docs/articles/{id}/content.md
-  → .zip: 解压到 docs/sites/{id}/
+  → .pdf:  MinerU API → Markdown → 拆分章节 → docs/books/{id}/
+  → .epub: pandoc → Markdown + 媒体资源 → 拆分章节 → docs/books/{id}/
+  → .md:   复制到 docs/articles/{id}/content.md
+  → .zip:  解压到 docs/sites/{id}/
   → 构建 manifest → GitHub Pages 部署
 ```
 

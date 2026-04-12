@@ -8,7 +8,7 @@ import {
   loadHistory, fetchFailures, dismissFailure, retryFailure,
   getDisplayTitle, normalizeVisibility,
   normalizeTags, parseTagsInput, formatBytes, dateFormatter, dateTimeFormatter,
-  numberFormatter, MAX_FILE_SIZE, VISIBILITY_VALUES, toIsoNow,
+  numberFormatter, ACCEPTED_EXTENSIONS, MAX_FILE_SIZE, VISIBILITY_VALUES, toIsoNow,
 } from '../lib/github-api';
 
 const CONTENT_TYPE_LABELS = {
@@ -125,12 +125,17 @@ function UploadSection({ repo, disabled }) {
   const [error, setError] = useState('');
   const [dragOver, setDragOver] = useState(false);
   let dragCounter = 0;
+  const acceptedExtensionsLabel = ACCEPTED_EXTENSIONS.map((ext) => `.${ext}`).join(',');
+  const acceptedExtensionsText = ACCEPTED_EXTENSIONS.map((ext) => `.${ext}`).join(', ');
 
   const handleFile = async (file) => {
     if (!file || disabled) return;
     setError('');
     const ext = file.name.split('.').pop().toLowerCase();
-    if (!['pdf', 'md', 'zip'].includes(ext)) { setError('Only .pdf, .md, and .zip files are accepted.'); return; }
+    if (!ACCEPTED_EXTENSIONS.includes(ext)) {
+      setError(`Only ${acceptedExtensionsText} files are accepted.`);
+      return;
+    }
     if (file.size > MAX_FILE_SIZE) { setError(`File too large (${formatBytes(file.size)}). Max 100 MB.`); return; }
     try {
       await apiUploadContent(file, repo, (stage, msg) => setProgress({ stage, msg }));
@@ -158,7 +163,7 @@ function UploadSection({ repo, disabled }) {
           role="button"
           tabIndex="0"
           aria-label="Upload content file"
-          onClick={() => { const i = document.createElement('input'); i.type = 'file'; i.accept = '.pdf,.md,.zip'; i.onchange = () => handleFile(i.files[0]); i.click(); }}
+          onClick={() => { const i = document.createElement('input'); i.type = 'file'; i.accept = acceptedExtensionsLabel; i.onchange = () => handleFile(i.files[0]); i.click(); }}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); }}}
           onDragEnter={(e) => { e.preventDefault(); dragCounter++; setDragOver(true); }}
           onDragOver={(e) => e.preventDefault()}
@@ -168,7 +173,7 @@ function UploadSection({ repo, disabled }) {
           <svg class="upload-dropzone-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M32 32l-8-8-8 8M24 24v18M40.78 37.09A10 10 0 0 0 36 18h-2.52A16 16 0 1 0 8 32.29" />
           </svg>
-          <div class="upload-dropzone-text">Drop PDF, Markdown, or ZIP here or click to browse</div>
+          <div class="upload-dropzone-text">Drop PDF, EPUB, Markdown, or ZIP here or click to browse</div>
           <div class="upload-dropzone-hint">Maximum 100 MB</div>
         </div>
       )}
@@ -571,7 +576,7 @@ function CatalogSection({ repo }) {
               <svg class="admin-empty-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M8 6h10a4 4 0 0 1 4 4v28a3 3 0 0 0-3-3H8V6zM40 6H30a4 4 0 0 0-4 4v28a3 3 0 0 1 3-3h11V6z" />
               </svg>
-              <p class="admin-empty-text">No content yet. Upload a PDF, Markdown file, or ZIP to get started.</p>
+              <p class="admin-empty-text">No content yet. Upload a PDF, EPUB, Markdown file, or ZIP to get started.</p>
             </>
           ) : (
             <>

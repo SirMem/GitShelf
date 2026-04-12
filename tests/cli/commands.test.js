@@ -129,7 +129,7 @@ describe('cli commands', () => {
     });
 
     await expect(run(['doc-1'])).rejects.toThrow(
-      'Only PDF books can be re-processed. Re-upload Markdown or ZIP sources instead.',
+      'Only books can be re-processed. Re-upload Markdown or ZIP sources instead.',
     );
     expect(triggerReconvert).not.toHaveBeenCalled();
   });

@@ -4,7 +4,7 @@
 
 GitHub-hosted content shelf. Fork, upload, done.
 
-> Fork this repo to get your own content platform on GitHub Pages. Upload PDFs (auto-converted to books), Markdown documents (rendered directly), or ZIP archives (deployed as static sites). Zero server cost.
+> Fork this repo to get your own content platform on GitHub Pages. Upload PDFs or EPUBs (auto-converted to books), Markdown documents (rendered directly), or ZIP archives (deployed as static sites). Zero server cost.
 
 ## Quick Start
 
@@ -24,7 +24,7 @@ Your site is now live at `https://<your-username>.github.io/gitshelf/`
 3. In your fork, go to **Settings > Secrets and variables > Actions**
 4. Click **New repository secret**, name it `MINERU_TOKEN`, paste the token
 
-> Only needed if you want to upload PDFs. Markdown and ZIP uploads work without this.
+> Only needed if you want to upload PDFs. EPUB, Markdown, and ZIP uploads work without this.
 
 ### 3. Password Protection (Optional)
 
@@ -41,6 +41,7 @@ Your site is now live at `https://<your-username>.github.io/gitshelf/`
    ([Create one here](https://github.com/settings/tokens/new?scopes=repo&description=GitShelf))
 3. Upload a file:
    - **`.pdf`** — Converted to a multi-chapter book via MinerU API
+   - **`.epub`** — Converted to a multi-chapter book via pandoc
    - **`.md`** — Rendered directly as a document
    - **`.zip`** — Extracted as a static site (must contain `index.html`)
 4. Wait for GitHub Actions to process (progress shown in Actions tab)
@@ -50,14 +51,14 @@ Your site is now live at `https://<your-username>.github.io/gitshelf/`
 
 | Type | Upload | Display |
 |------|--------|---------|
-| **Book** | `.pdf` file | Chapter reader with TOC sidebar, keyboard navigation |
+| **Book** | `.pdf` or `.epub` file | Chapter reader with TOC sidebar, keyboard navigation |
 | **Document** | `.md` file | Single-page Markdown rendering with syntax highlighting |
 | **Site** | `.zip` file | Static site served directly (clicks open in new tab) |
 
 ## Features
 
 - **Reader** — Dark/light theme, chapter sidebar, keyboard navigation, code highlighting (Shiki), math rendering (KaTeX), responsive layout
-- **Admin** — Upload PDFs/Markdown/ZIPs from browser, catalog management (edit, publish, hide, archive, delete), search & filter
+- **Admin** — Upload PDFs/EPUBs/Markdown/ZIPs from browser, catalog management (edit, publish, hide, archive, delete), search & filter
 - **Pipeline** — GitHub Actions processes uploads automatically, handles large PDFs by auto-chunking
 - **Homepage** — Tab-based filtering: All / Books / Documents / Sites
 
@@ -66,9 +67,10 @@ Your site is now live at `https://<your-username>.github.io/gitshelf/`
 ```
 Upload content (browser → GitHub API → input/)
   → GitHub Actions runs scripts/process.py
-  → .pdf: MinerU API → Markdown → Split chapters → docs/books/{id}/
-  → .md:  Copy to docs/articles/{id}/content.md
-  → .zip: Extract to docs/sites/{id}/
+  → .pdf:  MinerU API → Markdown → Split chapters → docs/books/{id}/
+  → .epub: pandoc → Markdown + media → Split chapters → docs/books/{id}/
+  → .md:   Copy to docs/articles/{id}/content.md
+  → .zip:  Extract to docs/sites/{id}/
   → Build manifest → GitHub Pages deploys
 ```
 

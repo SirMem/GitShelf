@@ -10,7 +10,7 @@ const CATALOG_DEFAULT_PATH = 'docs/catalog.json';
 const CATALOG_METADATA_PATH = 'docs/catalog-metadata.json';
 const VISIBILITY_VALUES = ['published', 'hidden', 'archived'];
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
-const ACCEPTED_EXTENSIONS = ['pdf', 'md', 'zip'];
+const ACCEPTED_EXTENSIONS = ['pdf', 'epub', 'md', 'zip'];
 
 const CONTENT_TYPE_DIRS = {
   book: 'docs/books',
@@ -298,19 +298,30 @@ async function listRepoTree(repo, path) {
 }
 
 async function getCacheDeleteOps(repo, itemId) {
-  let md5;
+  let pdfMd5;
+  let epubMd5;
   try {
     const f = await readRepositoryJson(repo, `docs/books/${itemId}/meta.json`);
-    md5 = f.data?.pdf_md5;
+    pdfMd5 = f.data?.pdf_md5;
+    epubMd5 = f.data?.epub_md5;
   } catch { /* not found */ }
-  if (!md5) {
-    return [];
+  const ops = [];
+
+  if (pdfMd5) {
+    const cacheFiles = await listRepoTree(repo, 'cache/markdown');
+    ops.push(...cacheFiles
+      .filter(f => f.name.startsWith(pdfMd5))
+      .map(f => ({ path: f.path, delete: true })));
   }
 
-  const cacheFiles = await listRepoTree(repo, 'cache/markdown');
-  return cacheFiles
-    .filter(f => f.name.startsWith(md5))
-    .map(f => ({ path: f.path, delete: true }));
+  if (epubMd5) {
+    const cacheFiles = await listRepoTree(repo, 'cache/epub');
+    ops.push(...cacheFiles
+      .filter(f => f.name.startsWith(epubMd5))
+      .map(f => ({ path: f.path, delete: true })));
+  }
+
+  return ops;
 }
 
 export async function deleteItemPermanently(item, repo, catalog) {
@@ -375,4 +386,4 @@ export const dateFormatter = new Intl.DateTimeFormat(undefined, { year: 'numeric
 export const dateTimeFormatter = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 export const numberFormatter = new Intl.NumberFormat(undefined);
 
-export { MAX_FILE_SIZE, VISIBILITY_VALUES, toIsoNow };
+export { ACCEPTED_EXTENSIONS, MAX_FILE_SIZE, VISIBILITY_VALUES, toIsoNow };

@@ -23,12 +23,12 @@ Usage:
   gitshelf <command> [options]
 
 Commands:
-  upload <file>                Upload .pdf, .md, or .zip to GitShelf
+  upload <file>                Upload .pdf, .epub, .md, or .zip to GitShelf
   list [--type TYPE]           List all content items
   info <id|type:id>            Show details for one item
   edit <id|type:id> [...]      Edit item metadata
   delete <id|type:id> [--yes]  Delete an item permanently
-  reconvert <id|type:id>       Trigger re-processing for a PDF book
+  reconvert <id|type:id>       Trigger re-processing for a book source
   failures                     List processing failures
   failures dismiss <filename>  Dismiss a failure
   failures retry <filename>    Retry a failed conversion

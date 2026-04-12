@@ -3,10 +3,10 @@
 /**
  * GitShelf MCP Server
  *
- * GitShelf is a zero-cost GitHub Pages content platform. Upload PDFs
- * (auto-converted to chapter books), Markdown (rendered as documents),
- * or ZIP archives (deployed as static sites). Everything is processed
- * by GitHub Actions and served from GitHub Pages.
+ * GitShelf is a zero-cost GitHub Pages content platform. Upload PDFs or
+ * EPUBs (auto-converted to chapter books), Markdown (rendered as
+ * documents), or ZIP archives (deployed as static sites). Everything is
+ * processed by GitHub Actions and served from GitHub Pages.
  *
  * This MCP server exposes GitShelf content reading and management tools.
  *
@@ -42,7 +42,7 @@ const server = new McpServer(
     version: '0.1.3',
   },
   {
-    instructions: 'GitShelf is a zero-cost GitHub Pages content platform. Upload PDFs (auto-converted to multi-chapter books with TOC and reader UI), Markdown files (rendered as documents), or ZIP archives (deployed as static sites). Everything is processed by GitHub Actions and served from GitHub Pages. Use these tools to browse, read, and manage GitShelf content.',
+    instructions: 'GitShelf is a zero-cost GitHub Pages content platform. Upload PDFs or EPUBs (auto-converted to multi-chapter books with TOC and reader UI), Markdown files (rendered as documents), or ZIP archives (deployed as static sites). Everything is processed by GitHub Actions and served from GitHub Pages. Use these tools to browse, read, and manage GitShelf content.',
   },
 );
 
@@ -233,7 +233,7 @@ server.registerTool(
   'upload',
   {
     title: 'Upload Content',
-    description: 'Upload a local file (.pdf, .md, or .zip) to GitShelf for processing.',
+    description: 'Upload a local file (.pdf, .epub, .md, or .zip) to GitShelf for processing.',
     inputSchema: z.object({
       file_path: z.string().describe('Absolute path to the file to upload'),
     }),

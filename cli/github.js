@@ -17,7 +17,7 @@ const FAILURES_PATH = 'docs/failures.json';
 const CONTENT_TYPE_DIRS = { book: 'docs/books', doc: 'docs/articles', site: 'docs/sites' };
 const VISIBILITY_VALUES = ['published', 'hidden', 'archived'];
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
-const ACCEPTED_EXTENSIONS = ['pdf', 'md', 'zip'];
+const ACCEPTED_EXTENSIONS = ['pdf', 'epub', 'md', 'zip'];
 
 let catalogSourcePath = CATALOG_DEFAULT_PATH;
 
@@ -172,17 +172,30 @@ async function listRepoTree(repo, path, token) {
 }
 
 async function getCacheDeleteOps(repo, itemId, token) {
-  let md5;
+  let pdfMd5;
+  let epubMd5;
   try {
     const f = await readJson(repo, `docs/books/${itemId}/meta.json`, token);
-    md5 = f.data?.pdf_md5;
+    pdfMd5 = f.data?.pdf_md5;
+    epubMd5 = f.data?.epub_md5;
   } catch { /* skip */ }
-  if (!md5) {
-    return [];
+  const ops = [];
+
+  if (pdfMd5) {
+    const cacheFiles = await listRepoTree(repo, 'cache/markdown', token);
+    ops.push(...cacheFiles
+      .filter((f) => f.name.startsWith(pdfMd5))
+      .map((f) => ({ path: f.path, delete: true })));
   }
 
-  const cacheFiles = await listRepoTree(repo, 'cache/markdown', token);
-  return cacheFiles.filter((f) => f.name.startsWith(md5)).map((f) => ({ path: f.path, delete: true }));
+  if (epubMd5) {
+    const cacheFiles = await listRepoTree(repo, 'cache/epub', token);
+    ops.push(...cacheFiles
+      .filter((f) => f.name.startsWith(epubMd5))
+      .map((f) => ({ path: f.path, delete: true })));
+  }
+
+  return ops;
 }
 
 function isSameCatalogItem(left, right) {

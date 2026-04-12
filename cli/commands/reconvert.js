@@ -8,7 +8,7 @@ async function run(argv) {
   const { token, repo } = loadConfig(argv);
   const { items } = await fetchCatalog(repo, token);
   const { item } = selectCatalogItem(items, id);
-  if (item.type !== 'book') die('Only PDF books can be re-processed. Re-upload Markdown or ZIP sources instead.');
+  if (item.type !== 'book') die('Only books can be re-processed. Re-upload Markdown or ZIP sources instead.');
 
   const clearCache = hasFlag(argv, '--clear-cache');
   await triggerReconvert(item, repo, token, { clearCache });

@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       filename:
-        description: "Specific filename in input/ (e.g. book.pdf, notes.md, site.zip)"
+        description: "Specific filename in input/ (e.g. book.pdf, book.epub, notes.md, site.zip)"
         required: false
         type: string
 
@@ -37,6 +37,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Install pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
 
       - name: Process content
         run: python scripts/process.py

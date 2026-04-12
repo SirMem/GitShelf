@@ -31,8 +31,8 @@ const TABS = [
 ];
 
 const EMPTY_MESSAGES = {
-  all: { title: 'No content yet', hint: 'Upload a PDF, Markdown file, or ZIP archive via the {admin} to get started.' },
-  book: { title: 'No books yet', hint: 'Upload a PDF via the {admin} to add your first book.' },
+  all: { title: 'No content yet', hint: 'Upload a PDF, EPUB, Markdown file, or ZIP archive via the {admin} to get started.' },
+  book: { title: 'No books yet', hint: 'Upload a PDF or EPUB via the {admin} to add your first book.' },
   doc: { title: 'No documents yet', hint: 'Upload a Markdown file via the {admin} to add a document.' },
   site: { title: 'No sites yet', hint: 'Upload a ZIP archive via the {admin} to publish a static site.' },
 };
