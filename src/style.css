@@ -957,14 +957,6 @@ button {
   .book-overview-meta span::after {
     display: none;
   }
-
-  .epub-reader-shell {
-    min-height: 58vh;
-  }
-
-  .epub-reader-frame {
-    min-height: 420px;
-  }
 }
 
 /* ==========================================================================
@@ -992,80 +984,6 @@ button {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
-}
-
-.epub-reader {
-  display: grid;
-  gap: var(--space-6);
-}
-
-.epub-reader-shell {
-  position: relative;
-  max-width: var(--content-max-width);
-  margin: 0 auto;
-  min-height: 70vh;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0.08)),
-    var(--color-bg-surface);
-  box-shadow: var(--shadow-subtle);
-  overflow: hidden;
-}
-
-[data-theme="dark"] .epub-reader-shell {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
-    var(--color-bg-surface);
-}
-
-.epub-reader-shell--loading::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(248, 242, 235, 0.12), rgba(248, 242, 235, 0.02));
-  pointer-events: none;
-}
-
-[data-theme="dark"] .epub-reader-shell--loading::after {
-  background: linear-gradient(180deg, rgba(28, 25, 21, 0.2), rgba(28, 25, 21, 0.05));
-}
-
-.epub-reader-frame {
-  height: calc(100dvh - var(--top-bar-height) - 9rem);
-  min-height: 520px;
-}
-
-.epub-reader-frame,
-.epub-reader-frame > div,
-.epub-reader-frame iframe {
-  width: 100%;
-  height: 100%;
-}
-
-.epub-reader-frame iframe {
-  display: block;
-  border: none;
-  background: transparent;
-}
-
-.epub-reader-loading {
-  position: absolute;
-  right: var(--space-4);
-  bottom: var(--space-4);
-  padding: var(--space-2) var(--space-3);
-  border-radius: 999px;
-  background-color: rgba(42, 34, 27, 0.78);
-  color: #fff;
-  font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  box-shadow: var(--shadow-subtle);
-}
-
-[data-theme="dark"] .epub-reader-loading {
-  background-color: rgba(243, 235, 228, 0.12);
-  color: var(--color-text-primary);
 }
 
 .reader-content h1,
@@ -3941,11 +3859,6 @@ button {
   .reader-content {
     font-size: 16px;
     line-height: 1.7;
-  }
-
-  .epub-reader-frame {
-    height: calc(100dvh - var(--top-bar-height) - 7rem);
-    min-height: 460px;
   }
 }
 

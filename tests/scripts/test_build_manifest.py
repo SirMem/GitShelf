@@ -23,18 +23,14 @@ def _create_book(
     source: str | None = None,
     source_format: str | None = None,
     toc_children: list[dict] | None = None,
-    raw_epub: bool = False,
 ) -> None:
     book_dir = books_dir / book_id
     book_dir.mkdir(parents=True, exist_ok=True)
     _write_json(book_dir / "toc.json", {"title": title, "children": toc_children or []})
 
-    if raw_epub:
-        (book_dir / "book.epub").write_bytes(b"epub-bytes")
-    else:
-        chapters_dir = book_dir / "chapters"
-        chapters_dir.mkdir(parents=True, exist_ok=True)
-        (chapters_dir / "01-intro.md").write_text("# Intro\n\nhello world\n", encoding="utf-8")
+    chapters_dir = book_dir / "chapters"
+    chapters_dir.mkdir(parents=True, exist_ok=True)
+    (chapters_dir / "01-intro.md").write_text("# Intro\n\nhello world\n", encoding="utf-8")
 
     if source or source_format:
         data = {
@@ -167,7 +163,7 @@ class BuildManifestTest(unittest.TestCase):
             self.assertEqual(manifest["items"][0]["type"], "book")
             self.assertEqual(manifest["items"][0]["source_format"], "markdown-derived")
 
-    def test_raw_epub_books_use_toc_counts_and_epub_source_format(self) -> None:
+    def test_books_can_keep_original_epub_source_name_after_conversion(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)
             books_dir = root / "docs" / "books"
@@ -182,25 +178,25 @@ class BuildManifestTest(unittest.TestCase):
                 book_id="epub-book",
                 title="EPUB Book",
                 source="epub-book.epub",
-                source_format="epub",
-                raw_epub=True,
+                source_format="markdown-derived",
                 toc_children=[
                     {
                         "title": "Chapter One",
                         "slug": "chapter-one",
-                        "href": "OPS/chapter-1.xhtml",
+                        "href": "chapter-1",
                         "children": [
                             {
                                 "title": "Section One",
                                 "slug": "section-one",
-                                "href": "OPS/chapter-1.xhtml#section-1",
+                                "href": "chapter-1",
+                                "anchor": "section-1",
                             }
                         ],
                     },
                     {
                         "title": "Chapter Two",
                         "slug": "chapter-two",
-                        "href": "OPS/chapter-2.xhtml",
+                        "href": "chapter-2",
                     },
                 ],
             )
@@ -215,10 +211,10 @@ class BuildManifestTest(unittest.TestCase):
             )
 
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            self.assertEqual(manifest["items"][0]["chapters_count"], 3)
-            self.assertIsNone(manifest["items"][0]["word_count"])
+            self.assertEqual(manifest["items"][0]["chapters_count"], 1)
+            self.assertEqual(manifest["items"][0]["word_count"], 4)
             self.assertEqual(manifest["items"][0]["source"], "epub-book.epub")
-            self.assertEqual(manifest["items"][0]["source_format"], "epub")
+            self.assertEqual(manifest["items"][0]["source_format"], "markdown-derived")
 
     def test_invalid_metadata_fails_loudly(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -27,10 +27,6 @@ export function flattenChapters(items) {
   return result;
 }
 
-export function getBookSourceFormat(item) {
-  return item?.source_format || 'markdown-derived';
-}
-
 export function getItemDisplayTitle(item) {
   if (!item) return 'Untitled';
   const raw = String(item.title || item.display_title || item.id || 'Untitled');

@@ -388,6 +388,8 @@ def _read_cache(md5: str) -> tuple[str, dict[str, bytes], int, list[TocEntry]] |
 def convert_single_pdf(
     pdf_path: Path,
     output_dir: Path,
+    *,
+    source_name: str | None = None,
 ) -> None:
     """Convert one PDF through the full pipeline.
 
@@ -405,8 +407,9 @@ def convert_single_pdf(
         "book",
     )
     title = pdf_path.stem
+    source_filename = str(source_name or pdf_path.name).strip() or pdf_path.name
 
-    print(f"Processing: {pdf_path.name} -> {book_id}")
+    print(f"Processing: {source_filename} -> {book_id}")
 
     md5 = _pdf_md5(pdf_path)
     cached = _read_cache(md5)
@@ -455,14 +458,14 @@ def convert_single_pdf(
     _write_book_metadata(
         book_dir,
         book_id=book_id,
-        source_pdf=pdf_path.name,
+        source_pdf=source_filename,
         pdf_md5=md5,
         page_count=page_count,
         updated_at=_utc_now_iso(),
     )
 
     # Clear any prior failure record for this PDF
-    _remove_failure(pdf_path.name, output_dir.parent)
+    _remove_failure(source_filename, output_dir.parent)
 
     # Delete source PDF — the cache preserves everything needed for reconvert
     pdf_path.unlink(missing_ok=True)

@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 VALID_VISIBILITY = {"published", "hidden", "archived"}
-EPUB_BOOK_FILENAME = "book.epub"
 
 
 def _utc_now_iso() -> str:
@@ -174,9 +173,7 @@ def _build_book_entry(book_dir: Path) -> dict:
 
     md_files = sorted(chapters_dir.glob("*.md")) if chapters_dir.is_dir() else []
     meta = _read_meta_json(book_dir / "meta.json")
-    source_format = str(meta.get("source_format", "")).strip()
-    if not source_format:
-        source_format = "epub" if (book_dir / EPUB_BOOK_FILENAME).exists() else "markdown-derived"
+    source_format = str(meta.get("source_format", "")).strip() or "markdown-derived"
 
     def _count_toc_entries(items: list[dict]) -> int:
         total = 0
@@ -198,8 +195,7 @@ def _build_book_entry(book_dir: Path) -> dict:
         book_dir.stat().st_mtime, tz=timezone.utc
     ).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    default_ext = ".epub" if source_format == "epub" else ".pdf"
-    source = str(meta.get("source", "")).strip() or f"{book_dir.name}{default_ext}"
+    source = str(meta.get("source", "")).strip() or f"{book_dir.name}.pdf"
     updated_at = str(meta.get("updated_at", "")).strip() or directory_modified_at
     created_at = str(meta.get("created_at", "")).strip() or updated_at
 

@@ -56,7 +56,6 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "epubjs": "^0.3.93",
     "zod": "^4.3.6"
   }
 }

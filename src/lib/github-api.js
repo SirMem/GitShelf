@@ -302,11 +302,9 @@ async function listRepoTree(repo, path) {
 
 async function getCacheDeleteOps(repo, itemId) {
   let pdfMd5;
-  let epubMd5;
   try {
     const f = await readRepositoryJson(repo, `docs/books/${itemId}/meta.json`);
     pdfMd5 = f.data?.pdf_md5;
-    epubMd5 = f.data?.epub_md5;
   } catch { /* not found */ }
   const ops = [];
 
@@ -314,13 +312,6 @@ async function getCacheDeleteOps(repo, itemId) {
     const cacheFiles = await listRepoTree(repo, 'cache/markdown');
     ops.push(...cacheFiles
       .filter(f => f.name.startsWith(pdfMd5))
-      .map(f => ({ path: f.path, delete: true })));
-  }
-
-  if (epubMd5) {
-    const cacheFiles = await listRepoTree(repo, 'cache/epub');
-    ops.push(...cacheFiles
-      .filter(f => f.name.startsWith(epubMd5))
       .map(f => ({ path: f.path, delete: true })));
   }
 

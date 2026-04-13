@@ -4,7 +4,7 @@
 
 基于 GitHub 的内容托管平台。Fork，上传，搞定。
 
-> Fork 本仓库即可拥有自己的内容平台。上传 PDF 或 EPUB（发布为在线书籍）、Markdown 文档（直接渲染）、ZIP 压缩包（部署为静态站点），全部托管在 GitHub Pages 上。零服务器成本。
+> Fork 本仓库即可拥有自己的内容平台。上传 PDF 或 EPUB（转换后发布为在线书籍）、Markdown 文档（直接渲染）、ZIP 压缩包（部署为静态站点），全部托管在 GitHub Pages 上。零服务器成本。
 
 ## 快速开始
 
@@ -17,14 +17,14 @@
 
 站点已上线：`https://<your-username>.github.io/gitshelf/`
 
-### 2. 添加 MinerU Token（用于 PDF 转换）
+### 2. 添加 MinerU Token（用于 PDF 和 EPUB 转换）
 
 1. 在 [mineru.net](https://mineru.net) 注册（测试期免费）
 2. 复制 API Token
 3. 在你的 Fork 中，进入 **Settings > Secrets and variables > Actions**
 4. 点击 **New repository secret**，名称填 `MINERU_TOKEN`，粘贴 Token
 
-> 仅上传 PDF 时需要。EPUB、Markdown 和 ZIP 上传无需此配置。
+> 书籍上传都需要。EPUB 会先经由 Calibre 转成 PDF，再进入和 PDF 相同的 MinerU 处理流水线。
 
 ### 3. 密码保护（可选）
 
@@ -41,7 +41,7 @@
    （[点此创建](https://github.com/settings/tokens/new?scopes=repo&description=GitShelf)）
 3. 上传文件：
    - **`.pdf`** — 通过 MinerU API 转换为多章节书籍
-   - **`.epub`** — 原样保存，并在浏览器中直接阅读，保留目录导航
+   - **`.epub`** — 先用 Calibre 转成 PDF，再复用和 PDF 相同的章节转换流程
    - **`.md`** — 直接作为文档渲染展示
    - **`.zip`** — 解压为静态站点（需包含 `index.html`）
 4. 等待 GitHub Actions 处理完成
@@ -68,7 +68,7 @@
 上传内容（浏览器 → GitHub API → input/）
   → GitHub Actions 运行 scripts/process.py
   → .pdf:  MinerU API → Markdown → 拆分章节 → docs/books/{id}/
-  → .epub: 保存原始 EPUB + 提取目录 → docs/books/{id}/
+  → .epub: Calibre → PDF → MinerU API → Markdown → 拆分章节 → docs/books/{id}/
   → .md:   复制到 docs/articles/{id}/content.md
   → .zip:  解压到 docs/sites/{id}/
   → 构建 manifest → GitHub Pages 部署
@@ -90,7 +90,7 @@ python -m unittest discover -s tests/scripts -v # Python 流水线测试
 
 **MinerU 收费了怎么办？** 修改 `scripts/mineru_client.py` 即可替换，兼容任何 PDF 转 Markdown 工具。
 
-**可以手动编辑转换后的章节吗？** PDF 转换得到的书籍可以。编辑 `docs/books/<id>/chapters/` 下的 `.md` 文件并提交即可。EPUB 书籍则直接读取原始 `book.epub`。
+**可以手动编辑转换后的章节吗？** 可以。无论上传的是 PDF 还是 EPUB，最终都会生成 `docs/books/<id>/chapters/` 下的 Markdown 章节文件，可以直接编辑并提交。
 
 **可以上传静态站点吗？** 可以。将站点打包为 `.zip`（根目录需包含 `index.html`），通过管理面板上传即可。
 

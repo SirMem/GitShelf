@@ -9,12 +9,11 @@ import { ScrollToTop } from './ScrollToTop';
 import { ToastContainer } from './ToastContainer';
 import { HomeView } from './HomeView';
 import { ChapterReader } from './ChapterReader';
-import { EpubReader } from './EpubReader';
 import { BookOverview } from './BookOverview';
 import { ArticleReader } from './ArticleReader';
 import { Footer } from './Footer';
 import { SearchPanel } from './SearchPanel';
-import { fetchManifest, getBookSourceFormat } from '../lib/api';
+import { fetchManifest } from '../lib/api';
 
 const AdminView = lazy(() => import('./AdminView'));
 
@@ -27,15 +26,10 @@ export function App() {
   const [breadcrumb, setBreadcrumb] = useState('');
   const [activeAnchor, setActiveAnchor] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [activeBook, setActiveBook] = useState(undefined);
-  const [epubProgress, setEpubProgress] = useState(0);
 
   const isChapter = route.type === 'chapter';
   const isBookRoute = route.type === 'book-overview' || route.type === 'chapter';
-  const activeBookSourceFormat = activeBook === undefined ? null : getBookSourceFormat(activeBook);
-  const isEpubBook = activeBookSourceFormat === 'epub';
-  const { progress: scrollProgress, showScrollTop, scrollToTop } = useScrollProgress(isChapter && !isEpubBook);
-  const progress = isEpubBook ? epubProgress : scrollProgress;
+  const { progress, showScrollTop, scrollToTop } = useScrollProgress(isChapter);
 
   const handleToggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => !prev);
@@ -52,10 +46,6 @@ export function App() {
 
   const handleActiveAnchor = useCallback((anchor) => {
     setActiveAnchor(anchor);
-  }, []);
-
-  const handleEpubProgress = useCallback((nextProgress) => {
-    setEpubProgress(nextProgress);
   }, []);
 
   const handleOpenSearch = useCallback(() => setSearchOpen(true), []);
@@ -92,32 +82,6 @@ export function App() {
     }
   }, [route.type, route.siteId]);
 
-  useEffect(() => {
-    if (!isBookRoute) {
-      setActiveBook(undefined);
-      return undefined;
-    }
-
-    let cancelled = false;
-    setActiveBook(undefined);
-    setEpubProgress(0);
-    fetchManifest()
-      .then((manifest) => {
-        if (cancelled) return;
-        const nextBook = manifest.items?.find((item) => item.id === route.bookId) || null;
-        setActiveBook(nextBook);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setActiveBook(null);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isBookRoute, route.bookId]);
-
   // Reset sidebar state when leaving book routes
   useEffect(() => {
     if (!isBookRoute) {
@@ -125,13 +89,11 @@ export function App() {
       setBreadcrumb('');
       setSidebarOpen(false);
       setActiveAnchor(null);
-      setEpubProgress(0);
     }
   }, [isBookRoute]);
 
   const showSidebar = isBookRoute;
-  const showSearch = isBookRoute && activeBook !== undefined && activeBookSourceFormat !== 'epub';
-  const waitingForBookFormat = route.type === 'chapter' && activeBook === undefined;
+  const showSearch = isBookRoute;
 
   return (
     <>
@@ -175,26 +137,13 @@ export function App() {
           />
         )}
         {route.type === 'chapter' && (
-          waitingForBookFormat ? (
-            <div class="reader-content view-enter" style={{ opacity: 0.5 }}>Loading book...</div>
-          ) : isEpubBook ? (
-            <EpubReader
-              bookId={route.bookId}
-              slug={route.slug}
-              onTocLoaded={handleTocLoaded}
-              onActiveAnchor={handleActiveAnchor}
-              onProgressChange={handleEpubProgress}
-              theme={theme}
-            />
-          ) : (
-            <ChapterReader
-              bookId={route.bookId}
-              slug={route.slug}
-              anchor={route.anchor}
-              onTocLoaded={handleTocLoaded}
-              onActiveAnchor={handleActiveAnchor}
-            />
-          )
+          <ChapterReader
+            bookId={route.bookId}
+            slug={route.slug}
+            anchor={route.anchor}
+            onTocLoaded={handleTocLoaded}
+            onActiveAnchor={handleActiveAnchor}
+          />
         )}
         {route.type === 'article' && (
           <ArticleReader key={route.articleId + (route.anchor || '')} articleId={route.articleId} anchor={route.anchor} />
