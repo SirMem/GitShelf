@@ -5,12 +5,6 @@
       "book_id": "1-1-1-1-2笔记小结",
       "error": "No API token provided. Pass token= or set MINERU_TOKEN.",
       "failed_at": "2026-04-22T01:30:43Z"
-    },
-    {
-      "filename": "(2)--1.3-1.4笔记小结.pdf",
-      "book_id": "2-1-3-1-4笔记小结",
-      "error": "No API token provided. Pass token= or set MINERU_TOKEN.",
-      "failed_at": "2026-04-22T01:30:43Z"
     }
   ]
 }
