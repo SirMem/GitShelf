@@ -1,6 +1,21 @@
 {
   "items": [
     {
+      "id": "1-1-1-1-2笔记小结",
+      "type": "book",
+      "title": "(1)--1.1-1.2笔记小结",
+      "author": null,
+      "summary": null,
+      "tags": [],
+      "featured": false,
+      "source": "(1)--1.1-1.2笔记小结.pdf",
+      "created_at": "2026-04-22T01:43:40Z",
+      "updated_at": "2026-04-22T01:43:40Z",
+      "chapters_count": 22,
+      "word_count": 940,
+      "source_format": "markdown-derived"
+    },
+    {
       "id": "progit",
       "type": "book",
       "title": "progit",
